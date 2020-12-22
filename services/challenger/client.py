@@ -9,16 +9,13 @@ import json
 class Client:
     name = ""
     last_seen = datetime.time()
-    connection = {}
 
-    def __init__(self, name, last_seen, connection):
+    def __init__(self, name, last_seen):
         self.name = name
         self.last_seen = last_seen
-        self.connection = connection
 
     def toJson(self):
         return {
             "name": self.name,
             "last_seen": str(self.last_seen),
-            "connection": str(self.connection)
         }

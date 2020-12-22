@@ -1,20 +1,15 @@
 import flask
 import json
 from datetime import datetime
+from flask import request
 
 from client import Client
+from challenger import Challenger
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
-clients = {
-    1: Client("test 1", datetime.now(), {"localhost", "active"}),
-    2: Client("test 2", datetime.now(), {"192.169.2.2", "active"})
-}
-
-task = {1: "tasks"}
-
-data = {1: "data"}
+challenger = Challenger()
 
 
 @app.route('/', methods=['GET'])
@@ -23,27 +18,41 @@ def get_ui():
     return "<h1>Aemulator</h1><p>In the future you will find an web viewer at this point</p>"
 
 
+@app.route('/shutdown', methods=['POST'])
+def trigger_shutdown():
+    print("TODO: Shutting down")
+
+
 @app.route('/challenge/task', methods=['GET'])
 def get_challenge_task():
-    print("TODO: Get challenge task")
-    return task
+    return challenger.get_challenge_data()
 
 
 @app.route('/challenge/get_data', methods=['GET'])
 def get_challenge_data():
-    print("TODO: Get challenge data")
-    return data
+    return challenger.get_challenge_data()
 
 
-@app.route('/clients', methods=['GET'])
+@app.route('/clients/register', methods=['POST'])
+def register_client():
+    challenger.register_client(request.remote_addr)
+    return "true"
+
+
+@app.route('/clients/unregister', methods=['POST'])
+def unregister_client():
+    challenger.unregister_client(request.remote_addr)
+    return "true"
+
+
+@app.route('/clients/ping', methods=['POST'])
+def ping():
+    challenger.ping()
+
+
+@app.route('/clients/all', methods=['GET'])
 def get_clients():
-    print("TODO: Get clients")
-    return {k: v.toJson() for k, v in clients.items()}
-
-
-@app.route('/shutdown', methods=['POST'])
-def trigger_shutdown():
-    print("TODO: Shutting down")
+    return challenger.get_clients()
 
 
 app.run()
